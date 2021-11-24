@@ -28,9 +28,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-
 const options = ['Bogota', 'New york'];
-
 
 const Home = () => {
     const classes = useStyles();
@@ -41,7 +39,7 @@ const Home = () => {
 
     useEffect(async () => {
         if (dataCity) {
-            await loadDataCity('Bogota')
+            await loadDataCity('New york')
             
         }
     }, [])
