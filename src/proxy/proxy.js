@@ -3,7 +3,7 @@ export const Request = (props) => {
     const { method, endpoint, data  } = props
     return axios({
         method: method.toLowerCase(),
-         url: `http://localhost:49381/${endpoint}`,
+        url: `http://localhost:49381/api/${endpoint}`,
         data: data,
         // headers: {
         //     "content-type": "multipart/form-data"

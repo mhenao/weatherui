@@ -5,9 +5,11 @@ import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import NestedList from './NestedList';
-import News from './News';
-import { Request } from './proxy/proxy'
+import NestedList from './components/NestedList';
+import QueryReg from './components/QueryReg';
+import News from './components/News';
+import { Request } from './proxy/proxy';
+import cityNames from './json/cityNames.json';
 
 const useStyles = makeStyles((theme) => ({
     homeIcon: {
@@ -28,21 +30,23 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-const options = ['Bogota', 'New york'];
+
 
 const Home = () => {
     const classes = useStyles();
-    const [value, setValue] = React.useState(options[0]);
+    const [recentQuery, setRecentQuery] = useState();
+    const [value, setValue] = useState();
     const [inputValue, setInputValue] = useState('');
 
     const [dataCity, setDataCity] = useState({})
 
     useEffect(async () => {
+        console.log()
         if (dataCity) {
             await loadDataCity('New york')
-            
         }
     }, [])
+   
 
 
 
@@ -55,21 +59,31 @@ const Home = () => {
         }
         const apiResponse = await Request({
             method: "post",
-            endpoint: "api/create",
+            endpoint: "create",
             data: data
         });
         console.log(apiResponse)
         await setDataCity(apiResponse)
+        await loadDataQuery()
+    }
+
+    const loadDataQuery = async () => {
+        const apiQuerys = await Request({
+            method: "get",
+            endpoint: "list"
+        });
+        console.log(apiQuerys)
+        await setRecentQuery(apiQuerys.result)
     }
 
     return (
         <React.Fragment>
             <CssBaseline />
-            
+
             <Container maxWidth="lg" >
                 <div className='row' style={{ borderColor: '#ccc' }}>
                     <Grid container
-                        spacing={7}
+                        spacing={2}
                         className={classes.content}
                     >
                         <Grid item xs={12} md={12} sm={12}>
@@ -84,12 +98,12 @@ const Home = () => {
                                     setInputValue(newInputValue);
                                 }}
                                 id="controllable-states-demo"
-                                options={options}
+                                options={cityNames}
                                 style={{ width: 300 }}
                                 renderInput={(params) => <TextField {...params} label="Seleccionar ciudad" variant="outlined" />}
                             />
                         </Grid>
-                        <Grid item xs={12} md={8} sm={8}>
+                        <Grid item xs={12} md={5} sm={5}>
                             <Container maxWidth="xl" >
                                 <div className='row' style={{ borderColor: '#ccc' }}>
                                     <Grid container
@@ -99,8 +113,8 @@ const Home = () => {
 
                                         {dataCity.news ?
                                             <News
-                                            newsState={dataCity.news}
-                                            classes={classes}
+                                                newsState={dataCity.news}
+                                                classes={classes}
                                             />
                                             :
                                             <></>
@@ -117,6 +131,15 @@ const Home = () => {
                             {dataCity.weather ?
                                 <NestedList
                                     weather={dataCity.weather}
+                                />
+                                :
+                                <></>
+                            }
+                        </Grid>
+                        <Grid item xs={12} md={3} sm={3} >
+                            {dataCity.weather ?
+                                <QueryReg
+                                    recentQuery={recentQuery}
                                 />
                                 :
                                 <></>
